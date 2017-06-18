@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Configuration</title>
+</head>
+<body>
+<table>
+    <tr>
+        <th>用户名</th>
+        <th>配置文件</th>
+        <th>导航版本</th>
+        <th>状态</th>
+        <th>上传时间</th>
+        <th>修改时间</th>
+        <th>生成或者下载case</th>
+    </tr>
+    {% for c in config %}
+    <tr>
+        <td>{{ c.user }}</td>
+        <td> <a href="/casemaker/config/detail/{{ c.id }}" target="_blank">查看详情</a></td>
+        <td> {% for v in version %}
+            {% if v.version_id == c.navi_version_id %}
+            {{ v.version_name }}
+            {% endif %}
+            {% endfor %}
+        </td>
+        <td>
+            {% if c.state == 2 %}
+            case已生成
+            {% else %}
+            case未生成
+            {% endif %}
+        </td>
+        <td> {{ c.upload_time }}</td>
+        <td> {{ c.modify_time }}</td>
+        <td>
+            {% if c.state == 2 %}
+            <a href="/casemaker/case/download/{{ c.id }}" target="_blank">下载case</a>
+            {% else %}
+            <!-- 生成case的form -->
+            <form action="/casemaker/case/generate/" method="post">
+                <input type="hidden" name="config_id" value="{{ c.id }}" />
+                <input type="submit" name="Submit" value="生成case"/>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

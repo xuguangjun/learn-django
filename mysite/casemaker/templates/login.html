@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>欢迎使用case构造系统</title>
+</head>
+<body>
+{% if user_form.is_multipart %}
+    <form enctype="multipart/form-data" method="post" action="/casemaker/login/">
+{% else %}
+    <form method="post" action="/casemaker/login/"/>
+{% endif %}
+        {% csrf_token %}
+        {{ user_form }}
+        <input type="submit" name="login in" value="ok" />
+    </form>
+<p>如果没有用户名，请联系王利(wangli18@baidu.com)</p>
+</body>
+</html>

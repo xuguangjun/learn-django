@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Upload Your Configuration</title>
+</head>
+<body>
+{% if config_form.is_multipart %}
+    <form enctype="multipart/form-data" method="post" action="/casemaker/config/upload/">
+{% else %}
+    <form method="post" action="/casemaker/config/upload/"/>
+{% endif %}
+    {% csrf_token %}
+    {{ config_form }}
+     <!-- 版本选择使用select标签，利用Django的form不好实现 -->
+     <select name="version_id">
+         {% for choose in versions %}
+             <option value="{{ choose.version_id }}">{{ choose.version_name }}</option>
+         {% endfor %}
+     </select>
+    <input type="submit" id="upload" name="upload" value="upload" />
+</form>
+</body>
+</html>
