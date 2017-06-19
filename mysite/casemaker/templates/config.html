@@ -1,10 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-    <title>Configuration</title>
-</head>
-<body>
+{% extends "base_generic.html" %}
+{% block content %}
 <table>
     <tr>
         <th>用户名</th>
@@ -48,5 +43,5 @@
     </tr>
     {% endfor %}
 </table>
-</body>
-</html>
+<p><a href="/casemaker/config/upload/">上传新配置文件</a></p>
+{% endblock %}

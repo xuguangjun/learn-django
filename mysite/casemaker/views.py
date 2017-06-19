@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import os
 import logging
 import datetime
+import time
 import zipfile
 import shutil
 
@@ -19,17 +20,21 @@ from .util import read_file_data, VersionHelperClass
 logger = logging.getLogger(__name__)
 
 
-def index(request):
-    # if has login in, jump to allconfig page
-    # if not, jump to login page
+def is_login(request):
     if "login_name" in request.COOKIES:
-        # check if valid, if valid, jump to all config page
         login_name = request.COOKIES.get("login_name")
         user = User.objects.filter(username__exact=login_name)
         if user:
-            return HttpResponseRedirect("/casemaker/config/")
-    user_form = UserForm()
-    return render(request, "login.html", {"user_form": user_form})
+            return True
+    return False
+
+
+def index(request):
+    # if has login in, jump to allconfig page
+    # if not, jump to login page
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
+    return HttpResponseRedirect("/casemaker/config/")
 
 
 def login(request):
@@ -42,9 +47,9 @@ def login(request):
             logger.info("user login in, user name: " + username + ", password: " + password)
             user = User.objects.filter(username__exact=username, passwd__exact=password)
             if user:
-                logger.info("user: " + username + "login in success")
+                logger.info("user: " + username + " login in success")
                 response = HttpResponseRedirect("/casemaker/index/")
-                response.set_cookie('login_name', username, 1)
+                response.set_cookie('login_name', username, 86400)  # cookie valid in 1 day
                 return response
             else:
                 logger.info("user: " + username + " login in failed")
@@ -52,21 +57,26 @@ def login(request):
     return render(request, "login.html", {"user_form": user_form})
 
 
-
 def allconfig(request):
     # fetch all configuration info from databases
     # TODO fetch by page
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
     config = Config.objects.all()
     version = NaviVersion.objects.all()
     return render(request, 'config.html', {'config': config, 'version': version})
 
 
 def config_detail(request, id):
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
     config = get_object_or_404(Config, pk=id)
     return render(request, 'config_detail.html', {"data": config.config})
 
 
 def uploadconfig(request):
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
     if request.method == 'POST':
         config_form = ConfigForm(request.POST, request.FILES)
         if config_form.is_valid():
@@ -75,10 +85,7 @@ def uploadconfig(request):
             logger.info("post data: " + str(request.POST))
             config = Config()
             config.config = config_data
-            if "user" in request.POST:
-                config.user = request.POST["user"]
-            else:
-                config.user = "wangli"
+            config.user = request.COOKIES["login_name"]
             if "version_id" in request.POST:
                 config.navi_version_id = request.POST["version_id"]
             else:
@@ -97,16 +104,22 @@ def uploadconfig(request):
 
 
 def allcase(request):
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
     case = Case.objects.all()
     return render(request, "case.html", {'case': case})
 
 
 def case_detail(request, id):
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
     case = get_object_or_404(Case, pk=id)
     return render(request, "case_detail.html", {'case': case})
 
 
 def generate_case(request):
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
     if request.method == "POST":
         if "config_id" not in request.POST:
             return HttpResponse("required param missing: config_id")
@@ -132,7 +145,7 @@ def generate_case(request):
         case.config_id = config_id
         case.generate_time = datetime.datetime.now()
         case.dir = dir
-        case.name = name
+        case.name = config.user + "_" + str(time.time()) + ".zip"
         case.case_num = 1
         case.download_times = 0
         case.save()
@@ -144,6 +157,8 @@ def generate_case(request):
 
 
 def download_all_case(request):
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
     zip_filename = "zip_file.zip"  # todo change according to request info
     if not os.path.isfile(zip_filename):
         logger.info("generate new zip file: " + zip_filename)
@@ -161,6 +176,8 @@ def download_all_case(request):
 
 
 def download_case(request, config_id):
+    if not is_login(request):
+        return HttpResponseRedirect("/casemaker/login/")
     case = get_object_or_404(Case, config_id=config_id)
     if not case:
         logger.error("case not exists, maybe has not generated, config id: " + config_id)
@@ -171,7 +188,11 @@ def download_case(request, config_id):
         archive = zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED)
         for dir_path, dir_names, filenames in os.walk(case.dir):
             for filename in filenames:
-                archive.write(os.path.join(dir_path, filename))
+                full_path_name = os.path.join(dir_path, filename)
+                if full_path_name == zip_filename:  # except zip file itself
+                    logger.info("file name: " + full_path_name)
+                    continue
+                archive.write(full_path_name)
         archive.close()
     with open(zip_filename, 'rb') as f:
         content = f.read()
