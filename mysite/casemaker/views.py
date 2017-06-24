@@ -14,7 +14,10 @@ from django.urls import reverse
 
 from .forms import ConfigForm, UserForm
 from .models import Config, NaviVersion, Case, User
-from .util import read_file_data, VersionHelperClass
+from .util import read_file_data
+from casegenerator.caseGenerator import load_old_pb, generate_new_pb, write_to_file
+from casegenerator.caseGenerator import get_old_pb_from_file, ORIGINAL_PB_SOURCE
+from casegenerator.configReader import parse_case_from_config
 
 # Create your views here.
 logger = logging.getLogger(__name__)
@@ -131,21 +134,30 @@ def generate_case(request):
         logger.info("config_id: " + config_id + ", config data: " + config_data)
         # todo generate the cases, temporary we just create a random file
         # after generate the case, change the state in Config database
-        base_dir = os.path.join("case", config.user)
+        base_dir = os.path.join("case_data", config.user)
         dir = os.path.join(base_dir, config_id)
         if os.path.exists(dir):
             # os.rmdir(dir) 只能删除空文件夹
             shutil.rmtree(dir)
         os.makedirs(dir)
+        old_pb = load_old_pb(get_old_pb_from_file(ORIGINAL_PB_SOURCE))  # TODO load pb binary data from databases
+        cases = parse_case_from_config(config_data)
+        i = 1
+        for generated_case in cases:
+            new_pb_content = generate_new_pb(old_pb, generated_case)
+            write_to_file(dir + str(i), new_pb_content)
+            i += 1
+        '''
         name = "test.txt"
         filename = os.path.join(dir, name)
         with open(filename, "w") as f:
             f.write("hahaah")
+        '''
         case = Case()
         case.config_id = config_id
         case.generate_time = datetime.datetime.now()
         case.dir = dir
-        case.name = config.user + "_" + str(time.time()) + ".zip"
+        case.name = config.user + "_" + str(time.time()) + ".zip"  # the zip file will generate when first downloaded
         case.case_num = 1
         case.download_times = 0
         case.save()
