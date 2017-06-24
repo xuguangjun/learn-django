@@ -5,10 +5,11 @@
     <title>欢迎使用case构造系统</title>
 </head>
 <body>
+{% url 'login' as login_url %}
 {% if user_form.is_multipart %}
-    <form enctype="multipart/form-data" method="post" action="/casemaker/login/">
+    <form enctype="multipart/form-data" method="post" action="{{ login_url }}">
 {% else %}
-    <form method="post" action="/casemaker/login/"/>
+    <form method="post" action="{{ login_url }}"/>
 {% endif %}
         {% csrf_token %}
         {{ user_form }}

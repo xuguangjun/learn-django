@@ -13,7 +13,7 @@
     {% for c in config %}
     <tr>
         <td>{{ c.user }}</td>
-        <td> <a href="/casemaker/config/detail/{{ c.id }}" target="_blank">查看详情</a></td>
+        <td> <a href="{% url 'config_detail' c.id %}" target="_blank">查看详情</a></td>
         <td> {% for v in version %}
             {% if v.version_id == c.navi_version_id %}
             {{ v.version_name }}
@@ -31,10 +31,10 @@
         <td> {{ c.modify_time }}</td>
         <td>
             {% if c.state == 2 %}
-            <a href="/casemaker/case/download/{{ c.id }}" target="_blank">下载case</a>
+            <a href="{% url 'download_case' c.id %}" target="_blank">下载case</a>
             {% else %}
             <!-- 生成case的form -->
-            <form action="/casemaker/case/generate/" method="post">
+            <form action="{% url 'generate_case' %}" method="post">
                 <input type="hidden" name="config_id" value="{{ c.id }}" />
                 <input type="submit" name="Submit" value="生成case"/>
             </form>
@@ -43,5 +43,5 @@
     </tr>
     {% endfor %}
 </table>
-<p><a href="/casemaker/config/upload/">上传新配置文件</a></p>
+<p><a href="{% url 'uploadconfig' %}">上传新配置文件</a></p>
 {% endblock %}

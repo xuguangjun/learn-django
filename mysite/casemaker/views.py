@@ -33,8 +33,8 @@ def index(request):
     # if has login in, jump to allconfig page
     # if not, jump to login page
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
-    return HttpResponseRedirect("/casemaker/config/")
+        return HttpResponseRedirect(reverse("login"))
+    return HttpResponseRedirect(reverse("allconfig"))
 
 
 def login(request):
@@ -48,7 +48,7 @@ def login(request):
             user = User.objects.filter(username__exact=username, passwd__exact=password)
             if user:
                 logger.info("user: " + username + " login in success")
-                response = HttpResponseRedirect("/casemaker/index/")
+                response = HttpResponseRedirect(reverse("allconfig"))
                 response.set_cookie('login_name', username, 86400)  # cookie valid in 1 day
                 return response
             else:
@@ -61,7 +61,7 @@ def allconfig(request):
     # fetch all configuration info from databases
     # TODO fetch by page
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
+        return HttpResponseRedirect(reverse("login"))
     config = Config.objects.all()
     version = NaviVersion.objects.all()
     return render(request, 'config.html', {'config': config, 'version': version})
@@ -69,14 +69,14 @@ def allconfig(request):
 
 def config_detail(request, id):
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
+        return HttpResponseRedirect(reverse("login"))
     config = get_object_or_404(Config, pk=id)
     return render(request, 'config_detail.html', {"data": config.config})
 
 
 def uploadconfig(request):
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
+        return HttpResponseRedirect(reverse("login"))
     if request.method == 'POST':
         config_form = ConfigForm(request.POST, request.FILES)
         if config_form.is_valid():
@@ -94,7 +94,7 @@ def uploadconfig(request):
             config.modify_time = config.upload_time
             config.state = 1
             config.save()
-            return HttpResponseRedirect('/casemaker/config/')
+            return HttpResponseRedirect(reverse("allconfig"))
         else:
             logger.error("config invalid")
     else:
@@ -105,21 +105,21 @@ def uploadconfig(request):
 
 def allcase(request):
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
+        return HttpResponseRedirect(reverse("login"))
     case = Case.objects.all()
     return render(request, "case.html", {'case': case})
 
 
 def case_detail(request, id):
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
+        return HttpResponseRedirect(reverse("login"))
     case = get_object_or_404(Case, pk=id)
     return render(request, "case_detail.html", {'case': case})
 
 
 def generate_case(request):
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
+        return HttpResponseRedirect(reverse("login"))
     if request.method == "POST":
         if "config_id" not in request.POST:
             return HttpResponse("required param missing: config_id")
@@ -151,14 +151,14 @@ def generate_case(request):
         case.save()
         config.state = 2
         config.save()
-        return HttpResponseRedirect("/casemaker/config/".format(config_id))
+        return HttpResponseRedirect(reverse("config_detail", kwargs={"id": config_id}))
     else:
         return HttpResponse("request method must be POST")
 
 
 def download_all_case(request):
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
+        return HttpResponseRedirect(reverse("login"))
     zip_filename = "zip_file.zip"  # todo change according to request info
     if not os.path.isfile(zip_filename):
         logger.info("generate new zip file: " + zip_filename)
@@ -177,11 +177,11 @@ def download_all_case(request):
 
 def download_case(request, config_id):
     if not is_login(request):
-        return HttpResponseRedirect("/casemaker/login/")
+        return HttpResponseRedirect(reverse("login"))
     case = get_object_or_404(Case, config_id=config_id)
     if not case:
         logger.error("case not exists, maybe has not generated, config id: " + config_id)
-        return HttpResponseRedirect("/casemaker/case/")
+        return HttpResponseRedirect(reverse("allconfig"))
     zip_filename = os.path.join(case.dir, case.name)
     if not os.path.isfile(zip_filename):
         logger.info("generate new zip file: " + zip_filename)

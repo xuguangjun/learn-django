@@ -5,10 +5,11 @@
     <title>Upload Your Configuration</title>
 </head>
 <body>
+{% url 'uploadconfig' as upload_config_url %}
 {% if config_form.is_multipart %}
-    <form enctype="multipart/form-data" method="post" action="/casemaker/config/upload/">
+    <form enctype="multipart/form-data" method="post" action="{{ upload_config_url }}">
 {% else %}
-    <form method="post" action="/casemaker/config/upload/"/>
+    <form method="post" action="{{ upload_config_url }}"/>
 {% endif %}
     {% csrf_token %}
     {{ config_form }}

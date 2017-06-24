@@ -10,10 +10,10 @@
     </tr>
     {% for c in case %}
     <tr>
-        <td><a href="/casemaker/config/detail/{{ c.config_id }}" target="_blank">配置详情</a> </td>
+        <td><a href="{% url 'case_detail' c.config_id %}" target="_blank">配置详情</a> </td>
         <td>{{ c.case_num }}</td>
         <td>{{ c.generate_time }}</td>
-        <td><a href="/casemaker/case/download/{{ c.config_id }}" target="_blank">下载</a></td>
+        <td><a href="{% url 'download_case' c.config_id %}" target="_blank">下载</a></td>
         <td>{{ c.download_times }}</td>
     </tr>
     {% endfor %}

@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'diff.apps.DiffConfig',
     'casemaker.apps.CasemakerConfig',
     'django.contrib.admin',
     'django.contrib.auth',

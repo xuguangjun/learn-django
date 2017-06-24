@@ -40,4 +40,4 @@ class Case(models.Model):
     download_times = models.SmallIntegerField()
 
     def __str__(self):
-        return "config id: " + str(self.config_id) + ", generate_time: " + self.generate_time
+        return "config id: " + str(self.config_id) + ", generate_time: " + str(self.generate_time)
