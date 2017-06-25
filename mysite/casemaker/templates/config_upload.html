@@ -1,10 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-    <title>Upload Your Configuration</title>
-</head>
-<body>
+{% extends "base_generic.html" %}
+{% block title %}配置详情{% endblock %}
+{% load static %}
+{% block head %}
+<title>上传配置</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/base_generic.css' %}" />
+{% endblock %}
+{% block content %}
 {% url 'uploadconfig' as upload_config_url %}
 {% if config_form.is_multipart %}
     <form enctype="multipart/form-data" method="post" action="{{ upload_config_url }}">
@@ -21,5 +22,4 @@
      </select>
     <input type="submit" id="upload" name="upload" value="upload" />
 </form>
-</body>
-</html>
+{% endblock %}

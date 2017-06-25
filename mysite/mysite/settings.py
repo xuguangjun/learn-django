@@ -26,7 +26,7 @@ SECRET_KEY = '%02whv=l2a9zuilizjv6yb=ue0*)1%lqrpuvidu+ii#shi*_f-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cq01-rdqa-dev033.cq01.baidu.com', '127.0.0.1']
 
 
 # Application definition
@@ -79,8 +79,19 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': 'mydatabase',
     }
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'casemaker',
+#        'USER': 'navi',
+#        'PASSWORD':'navi',
+#        'HOST': '127.0.0.1',
+#        'PORT': '3307',
+#        'OPTION' : {
+#            'sql_mode':'traditional',
+#            }
+#        }
 }
 
 
@@ -157,6 +168,11 @@ LOGGING = {
             'propagate': False,
         },
         'casemaker.views': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'filters': []
+        },
+        'casemaker.casegenerator.caseGenerator': {
             'handlers': ['console'],
             'level': 'INFO',
             'filters': []

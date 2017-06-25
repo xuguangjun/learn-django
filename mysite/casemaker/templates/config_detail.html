@@ -1,8 +1,15 @@
 {% extends "base_generic.html" %}
 {% block title %}配置详情{% endblock %}
+{% load static %}
+{% block head %}
+<title>case详情页</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/base_generic.css' %}" />
+{% endblock %}
 {% block content %}
-<pre>
+<h3>以下是配置内容</h3>
+<div class="raw_content">
+    <pre>
     {{ data }}
 </pre>
-<p><a href="{% url 'uploadconfig' %}">上传新配置文件</a></p>
+</div>
 {% endblock %}

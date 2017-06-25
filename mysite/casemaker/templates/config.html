@@ -1,4 +1,10 @@
 {% extends "base_generic.html" %}
+{% load static %}
+{% block head %}
+<title>配置详情页</title>
+<script type="text/javascript" src="{% static 'js/config.js' %}"> </script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/base_generic.css' %}" />
+{% endblock %}
 {% block content %}
 <table>
     <tr>
@@ -30,8 +36,10 @@
         <td> {{ c.upload_time }}</td>
         <td> {{ c.modify_time }}</td>
         <td>
-            {% if c.state == 2 %}
+            {% if c.state == 2 %} {# generate done #}
             <a href="{% url 'download_case' c.id %}" target="_blank">下载case</a>
+            {% elif c.state == 3 %}
+            <p>case生成中，请稍后刷新本页面</p>
             {% else %}
             <!-- 生成case的form -->
             <form action="{% url 'generate_case' %}" method="post">
@@ -43,5 +51,11 @@
     </tr>
     {% endfor %}
 </table>
-<p><a href="{% url 'uploadconfig' %}">上传新配置文件</a></p>
+{% ifnotequal current_page 1 %}
+    <a href="?current_page={{ current_page }}&&page_type=2">上一页</a>
+{% endifnotequal %}
+第{{ current_page }}/{{ total_page }}页
+{% ifnotequal current_page total_page %}
+    <a href="?current_page={{ current_page }}&&page_type=1">下一页</a>
+{% endifnotequal %}
 {% endblock %}

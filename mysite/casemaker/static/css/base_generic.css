@@ -1,0 +1,47 @@
+.navi ul{
+width:980px;
+margin:0px auto;
+height:38px;
+padding:0;
+}
+.navi ul li{
+float:left;
+list-style:none;
+}
+.navi ul li a{
+width:100px;
+height:28px;
+line-height:28px;
+background:green;
+color:#FFF;
+margin:5px 5px;
+font-size:12px;
+display:block;
+text-align:center;
+text-decoration:none;
+}
+.navi ul li a:hover{
+width:100px;
+height:26px;
+line-height:28px;
+border:1px solid green;
+color:black;
+background:#FFF;
+}
+.raw_content{
+font-size:15px;
+}
+
+table, th, td {
+border: 1px solid green;
+}
+table {
+width: 60%;
+}
+th, td {
+height: 10px;
+}
+td {
+text-align: center;
+padding: 3px;
+}

@@ -1,21 +1,33 @@
 {% extends "base_generic.html" %}
+{% load static %}
+{% block head %}
+<title>case详情页</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/base_generic.css' %}" />
+{% endblock %}
 {% block content %}
-<table>
+<table id="name_case_table" name="name_case_table">
     <tr>
         <th>配置文件</th>
         <th>case数量</th>
         <th>case生成时间</th>
-        <th>下载case</th>
         <th>下载次数</th>
+        <th>下载case</th>
     </tr>
     {% for c in case %}
     <tr>
-        <td><a href="{% url 'case_detail' c.config_id %}" target="_blank">配置详情</a> </td>
+        <td><a href="{% url 'config_detail' c.config_id %}" target="_blank">配置详情</a> </td>
         <td>{{ c.case_num }}</td>
         <td>{{ c.generate_time }}</td>
-        <td><a href="{% url 'download_case' c.config_id %}" target="_blank">下载</a></td>
         <td>{{ c.download_times }}</td>
+        <td><a href="{% url 'download_case' c.config_id %}" target="_blank">下载</a></td>
     </tr>
     {% endfor %}
 </table>
+{% ifnotequal current_page 1 %}
+    <a href="?current_page={{ current_page }}&&page_type=2">上一页</a>
+{% endifnotequal %}
+第{{ current_page }}/{{ total_page }}页
+{% ifnotequal current_page total_page %}
+    <a href="?current_page={{ current_page }}&&page_type=1">下一页</a>
+{% endifnotequal %}
 {% endblock %}

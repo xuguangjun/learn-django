@@ -1,5 +1,11 @@
 {% extends "base_generic.html" %}
-{% block title %}case详情页{% endblock %}
+{% load static %}
+{% block head %}
+<title>case详情页</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/base_generic.css' %}" />
+{% endblock %}
 {% block content %}
-{{ case }}
+<pre>
+    {{ case }}
+</pre>
 {% endblock %}

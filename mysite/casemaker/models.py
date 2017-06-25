@@ -21,18 +21,18 @@ class Config(models.Model):  # used to keep configuration information
 
 
 class NaviVersion(models.Model):
-    version_id = models.IntegerField()
+    version_id = models.IntegerField(unique=True)
     version_name = models.CharField(max_length=100)
 
 
 class User(models.Model):
-    username = models.CharField(max_length=50)
+    username = models.CharField(max_length=50, unique=True)
     passwd = models.CharField(max_length=50)
 
 
 @python_2_unicode_compatible
 class Case(models.Model):
-    config_id = models.IntegerField(default=1)
+    config_id = models.IntegerField(default=1, unique=True)
     dir = models.CharField(max_length=100)  # absolute directory
     generate_time = models.DateTimeField()
     case_num = models.SmallIntegerField()
